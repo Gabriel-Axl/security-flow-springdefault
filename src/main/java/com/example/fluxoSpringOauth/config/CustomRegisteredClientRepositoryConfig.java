@@ -3,6 +3,7 @@ package com.example.fluxoSpringOauth.config;
 import com.example.fluxoSpringOauth.repository.OauthRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
@@ -39,7 +40,7 @@ public class CustomRegisteredClientRepositoryConfig {
                 return repository.findByClientId(clientId)
                         .map(client -> RegisteredClient.withId(UUID.randomUUID().toString())
                                 .clientId(client.getClientId())
-                                .clientSecret("{noop}" + client.getClientSecret())
+                                .clientSecret(client.getClientSecret())
                                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                                 .scope("read")
@@ -56,6 +57,7 @@ public class CustomRegisteredClientRepositoryConfig {
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
+                .issuer("http://localhost:8080")
                 .tokenEndpoint("/oauth/token")
                 .build();
     }
@@ -76,6 +78,11 @@ public class CustomRegisteredClientRepositoryConfig {
                 context.getClaims().claim("client_id", context.getRegisteredClient().getClientId());
             }
         }
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }
