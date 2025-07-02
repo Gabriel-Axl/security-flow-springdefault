@@ -71,7 +71,8 @@ public class CustomRegisteredClientRepositoryConfig {
                 context.getClaims().claim("aud", "cade-rest-api");
 
                 if (context.getPrincipal() != null) {
-                    context.getClaims().claim("user_name", "alex");
+                    String clientId = context.getRegisteredClient().getClientId();
+                    context.getClaims().claim("user_name", clientId);
                     context.getClaims().claim("authorities", List.of("INTERNAL"));
                 }
 
